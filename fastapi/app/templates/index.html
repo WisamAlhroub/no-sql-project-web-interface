@@ -1,0 +1,53 @@
+{% extends "base/base.html" %}
+
+{% block title %}PubMed Serach Main Page{% endblock %}
+
+{% block content %}
+
+  <div class="container my-4">
+    <div class="card search-card">
+      <div class="card-header h2 text-center">Search Field</div>
+      <div class="card-body">
+        <input type="text" class="form-control">
+        <div class="d-grid gap-2">
+          <button class="btn btn-primary mt-4">Submit</button>
+        </div>
+      </div>
+      <div class="card-footer">
+        <h4>Options</h4>
+
+        <div class="px-4">
+          <h5>Search on:</h5>
+
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
+            <label class="form-check-label" for="flexRadioDefault1">
+              Author
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
+            <label class="form-check-label" for="flexRadioDefault2">
+              Date
+            </label>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" checked>
+            <label class="form-check-label" for="flexRadioDefault3">
+              Article
+            </label>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="card results-card mt-4">
+      <div class="card-header h2 text-center">Results</div>
+      <div class="card-body">
+
+      </div>
+    </div>
+  </div>
+
+{% endblock %}

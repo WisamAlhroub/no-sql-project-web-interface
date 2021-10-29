@@ -1,14 +1,18 @@
-from typing import Optional
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import HTMLResponse
+from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 
+# creates a fastapi application
 app = FastAPI()
 
+# mounting 'fastapi/app/static' folder to be easily accessed with jinja2
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
-@app.get("/")
-async def read_root():
-    return {"Hello": "World"}
+# defining the template object which holdes the templates directory used by jinja2
+templates = Jinja2Templates(directory="app/templates")
 
 
-@app.get("/items/{item_id}")
-async def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/", tags=['Main Route'], response_class=HTMLResponse)  
+async def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
