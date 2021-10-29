@@ -4,22 +4,22 @@
 <span style="margin-inline: 10px;">
 ![](https://shields.io/badge/Uvicorn-0.15.0-red?&style=flat-square)
 
-# NOSQL Python Backend for the NOSQL Course Project
+# NOSQL Python Backend and Web Host for the NOSQL Course Project
 
 
 ## How to run
-You can run the given script file in the terminal:
+Inisde `fastapi` folder, you can run the given script file in the terminal:
 
 ```
 bash .\install_locally.sh
 ```
 *PS: notice for the different options in that file*
 
-Once your python environment is set up, you can run the app via **`uvicorn`**
+Once your python environment is set up, you can run the app via `uvicorn`
 ```
-uvicorn main:app --reload --port <any empty port>
+python main.py
 ```
-Now your backend application is up and running!
+Now your backend application is up and running on port `4000`,  you can modify it inside `fastapi\main.py`
 
 ## Project Members
 1. [Wisam Alhroub](https://github.com/WisamAlhroub)
