@@ -1,51 +1,121 @@
 {% extends "base/base.html" %}
 
-{% block title %}PubMed Serach Main Page{% endblock %}
+{% block title %}Pubmed Serach Main Page{% endblock %}
+
+{% block facets%} 
+
+  <div class="container" {% if show_facets %}{% else %}hidden{% endif %}>
+    <div class="card">
+      <div class="card-header">
+        <h4>Related Items</h4>
+      </div>
+      <div class="card-body">
+        <div class="card">
+          <div class="card-header h5">Authors</div>
+          <div class="card-body">
+            {% for author_facet in results.facets.FullName.facetValues %}
+              {% if author_facet.value not in  [None, "", " "] %}
+                <a href="">{{author_facet.value}} [{{author_facet.count}}]</a>
+                <br>
+              {% endif %}
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="card mt-3">
+          <div class="card-body">
+            <div class="card-header h5">Years</div>
+            <div class="card-body">
+              {% for author_facet in results.facets.Year.facetValues %}
+                {% if author_facet.value not in  [None, "", " "] %}
+                  <a href="">{{author_facet.value}} [{{author_facet.count}}]</a>
+                  <br>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock %}
 
 {% block content %}
 
-  <div class="container my-4">
+  <div class="container">
     <div class="card search-card">
-      <div class="card-header h2 text-center">Search Field</div>
-      <div class="card-body">
-        <input type="text" class="form-control">
-        <div class="d-grid gap-2">
-          <button class="btn btn-primary mt-4">Submit</button>
-        </div>
+      <div class="card-header">
+        <h4>Search Section</h4>
       </div>
-      <div class="card-footer">
-        <h4>Options</h4>
-
-        <div class="px-4">
-          <h5>Search on:</h5>
-
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault1">
-            <label class="form-check-label" for="flexRadioDefault1">
-              Author
-            </label>
+      <div class="card-body">
+        <div class="row g-2">
+          <div class="col-8">
+            <input type="text" class="form-control" value={{results.qtext}}>
           </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault2" checked>
-            <label class="form-check-label" for="flexRadioDefault2">
-              Date
-            </label>
-          </div>
-          <div class="form-check">
-            <input class="form-check-input" type="radio" name="flexRadioDefault" id="flexRadioDefault3" checked>
-            <label class="form-check-label" for="flexRadioDefault3">
-              Article
-            </label>
+          <div class="col-auto">
+            <button class="btn btn-primary px-4">Search</button>
           </div>
         </div>
-
       </div>
     </div>
 
-    <div class="card results-card mt-4">
+    <div class="card results-card mt-4" {% if results %}{% else %}hidden{% endif %}>
       <div class="card-header h2 text-center">Results</div>
       <div class="card-body">
+        <div class="card mb-3">
+          <div class="card-body row">
+            <div class="col">
+              Showing results from 
+              <strong>{{pages_section+1}}</strong> to <strong>{{pages_section+results['page-length']}}</strong> of <strong>{{results.total}}</strong>
+            </div>
+            <div class="col d-flex justify-content-end">
+              <a type="button" class="mr-2" style="text-decoration: none; color: black;" href="http://localhost:4000/search/{{results.qtext}}?start=1"><<</a>
+              {% if pages_section %}
+              <a type="button" style="text-decoration: none; color: black;" href="http://localhost:4000/search/{{results.qtext}}?start={{pages_section-9}}">⯇</a>
+              {% endif %}
 
+              {% for i in range(results['page-length']) %}
+                {% if (i+1+pages_section) <= results.total %}
+
+                <a class="px-1" href="http://localhost:4000/search/{{results.qtext}}?start={{(i+1+pages_section)}}" style="text-decoration: none;">
+                  {% if results.start == (i+1+pages_section) %}
+                  <strong style="color: black;">{{(i+1+pages_section)}}</strong>
+                  {% else %}
+                  {{(i+1+pages_section)}}
+                  {% endif %}
+                </a>
+                {% endif %}
+              {% endfor %}
+
+              {% if pages_section + results['page-length'] < results.total %}
+              <a type="button" style="text-decoration: none; color: black;" href="http://localhost:4000/search/{{results.qtext}}?start={{pages_section+results['page-length']+1}}">⯈</a>
+              {% endif %}
+              <a type="button" class="mr-2" style="text-decoration: none; color: black;" href="http://localhost:4000/search/{{results.qtext}}?start={{results.total}}">>></a>
+            </div>
+          </div>
+        </div>
+
+        {% for result in results.results %}
+          <div class="container border-bottom mb-4">
+            <a href="http://localhost:8040/{{result.href}}" style="text-decoration: none;">
+              <h3>Atricle Title</h3>
+            </a>
+            <p>
+              {% for match in result.matches %}
+                <p class="my-1">
+                  {% for text in match['match-text'] %}
+                    {% if text.highlight %}
+                      <strong style="background-color: yellow;">{{text.highlight}}</strong>
+                    {% else %}
+                      {{text}}
+                    {% endif %}
+                  {% endfor %}
+                </p>
+              {% endfor %}
+            </p>
+          </div>
+        {% endfor %}
       </div>
     </div>
   </div>
