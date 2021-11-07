@@ -4,31 +4,31 @@
 
 {% block facets%} 
 
-  <div class="container" {% if show_facets %}{% else %}hidden{% endif %}>
-    <div class="card">
-      <div class="card-header">
-        <h4>Related Items</h4>
-      </div>
-      <div class="card-body">
-        <div class="card">
-          <div class="card-header h5">Authors</div>
-          <div class="card-body">
-            {% for author_facet in results.facets.FullName.facetValues %}
-              {% if author_facet.value not in  [None, "", " "] %}
-                <a href="">{{author_facet.value}} [{{author_facet.count}}]</a>
-                <br>
-              {% endif %}
-            {% endfor %}
-          </div>
+  {% if show_facets %}
+    <div class="container">
+      <div class="card">
+        <div class="card-header">
+          <h4>Related Items</h4>
         </div>
+        <div class="card-body">
+          <div class="card">
+            <div class="card-header h5">Authors</div>
+            <div class="card-body">
+              {% for author_facet in results.facets.FullName.facetValues %}
+                {% if author_facet.value not in  [None, "", " "] %}
+                  <a href='http://localhost:4000/search/{{results.qtext}} AND Author:"{{author_facet.value}}"?start=1' style="text-decoration: none;">{{author_facet.value}} [{{author_facet.count}}]</a>
+                  <br>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
 
-        <div class="card mt-3">
-          <div class="card-body">
+          <div class="card mt-3">
             <div class="card-header h5">Years</div>
             <div class="card-body">
               {% for author_facet in results.facets.Year.facetValues %}
                 {% if author_facet.value not in  [None, "", " "] %}
-                  <a href="">{{author_facet.value}} [{{author_facet.count}}]</a>
+                  <a href="http://localhost:4000/search/{{results.qtext}} AND Year:{{author_facet.value}}?start=1" style="text-decoration: none;">{{author_facet.value}} [{{author_facet.count}}]</a>
                   <br>
                 {% endif %}
               {% endfor %}
@@ -37,30 +37,35 @@
         </div>
       </div>
     </div>
-  </div>
+  {% endif %}
 
 {% endblock %}
 
 {% block content %}
 
   <div class="container">
+    {% if not show_document %}
+
     <div class="card search-card">
       <div class="card-header">
         <h4>Search Section</h4>
       </div>
       <div class="card-body">
-        <div class="row g-2">
-          <div class="col-8">
-            <input type="text" class="form-control" value={{results.qtext}}>
+        <form action="{{url_for('accept')}}" method="post">
+          <div class="row g-2">
+            <div class="col-8">
+              <input type="text" class="form-control" name="query" value="{{results['qtext']}}">
+            </div>
+            <div class="col-auto">
+              <button type="submit" class="btn btn-primary px-4">Search</button>
+            </div>
           </div>
-          <div class="col-auto">
-            <button class="btn btn-primary px-4">Search</button>
-          </div>
-        </div>
+        </form>
       </div>
     </div>
 
-    <div class="card results-card mt-4" {% if results %}{% else %}hidden{% endif %}>
+    <div class="card results-card mt-4">
+      
       <div class="card-header h2 text-center">Results</div>
       <div class="card-body">
         <div class="card mb-3">
@@ -98,8 +103,14 @@
 
         {% for result in results.results %}
           <div class="container border-bottom mb-4">
-            <a href="http://localhost:8040/{{result.href}}" style="text-decoration: none;">
-              <h3>Atricle Title</h3>
+            <a href="http://localhost:4000/document/show?href={{result.href}}" style="text-decoration: none;">
+              {% for element in result.extracted.content|reverse %}
+                {% if element|contains("Title") %} 
+                  <h3>{{element|clean}}</h3>
+                {% else %} 
+                  <h6>{{element|clean}}</h6>
+                {% endif %}
+              {% endfor %}
             </a>
             <p>
               {% for match in result.matches %}
@@ -118,6 +129,10 @@
         {% endfor %}
       </div>
     </div>
+
+    {% else %}
+        {% block document %} {% endblock %}
+      {% endif %}
   </div>
 
 {% endblock %}

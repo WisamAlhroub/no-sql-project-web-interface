@@ -1,0 +1,25 @@
+{% extends 'index.html' %}
+
+{% block document %}
+
+  <div class="card">
+    <div class="card-header">
+      <h4>{{doc.MedlineCitation.Article.ArticleTitle}}</h4>
+      <strong>On {{doc.MedlineCitation.DateCompleted.FullDate}}</strong>
+      <h5>By: 
+        <div style="color: brown;">
+          {% for author in doc.MedlineCitation.Article.AuthorList.Author %} 
+            {{author.FullName}},
+          {% endfor %}
+        </div>
+      </h5>
+    </div>
+    <div class="card-body">
+      <h6>Abstract</h6>
+      <p>{{doc.MedlineCitation.Article.Abstract.AbstractText}}</p>
+      <br>
+      <h6></h6>
+    </div>
+  </div>
+
+{% endblock %}
